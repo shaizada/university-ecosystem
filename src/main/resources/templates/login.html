@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кіру | University Ecosystem</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .login-header {
+            background: #1a1a1a;
+            color: #ffc107;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .login-header h3 {
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+        }
+
+        .btn-login {
+            background-color: #1a1a1a;
+            color: #ffc107;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #000;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .register-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .register-link:hover {
+            color: #1a1a1a;
+            text-decoration: underline;
+        }
+
+        .alert-danger {
+            border-radius: 10px;
+            font-size: 0.85rem;
+            border: none;
+            background-color: #fff5f5;
+            color: #e53e3e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="login-card">
+                    <!-- Хедер -->
+                    <div class="login-header">
+                        <h3>UniEcosystem</h3>
+                        <p class="small mb-0 text-white-50">Жүйеге қайта қош келдіңіз!</p>
+                    </div>
+
+                    <!-- Форма -->
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <!-- Қате туралы хабарлама -->
+                        <div th:if="${error}" class="alert alert-danger text-center mb-4" role="alert">
+                            <span th:text="${error}"></span>
+                        </div>
+
+                        <form th:action="@{/login}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-uppercase">Email</label>
+                                <input type="email" name="email" class="form-control" placeholder="example@mail.kz" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-uppercase">Құпия сөз</label>
+                                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-login w-100 shadow-sm">Кіру</button>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <a th:href="@{/register}" class="register-link">Аккаунтыңыз жоқ па? <b>Тіркелу</b></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-center text-white-50 mt-4 small">
+                    &copy; 2026 Astana International University. <br> Білім мен технология тоғысқан жер.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

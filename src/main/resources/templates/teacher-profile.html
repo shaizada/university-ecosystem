@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Оқытушы Профилі | UniEcosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body style="background-color: #f4f7f6;">
+
+    <!-- Навбарды қосу -->
+    <div th:replace="~{header :: navbar}"></div>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Профиль картасы -->
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-body p-5 text-center" style="background: linear-gradient(135deg, #1a1a1a 0%, #333 100%); color: white; border-radius: 15px 15px 0 0;">
+                        <div class="mb-3">
+                            <img src="https://ui-avatars.com/api/?name=[[${userName}]]&background=ffc107&color=1a1a1a&size=128" 
+                                 class="rounded-circle border border-4 border-warning shadow" alt="Avatar">
+                        </div>
+                        <h2 class="fw-bold" th:text="${userName}">Оқытушы Аты</h2>
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold">ОҚЫТУШЫ</span>
+                    </div>
+                    
+                    <div class="card-body p-4 bg-white" style="border-radius: 0 0 15px 15px;">
+                        <h5 class="fw-bold mb-4 border-bottom pb-2">Жеке мәліметтер</h5>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Лауазымы:</div>
+                            <div class="col-sm-8 fw-semibold">Профессор / Оқытушы</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted">Университет:</div>
+                            <div class="col-sm-8 fw-semibold">AIU (Astana International University)</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button class="btn btn-outline-dark rounded-pill px-4">Өңдеу</button>
+                            <a href="/teacher/home" class="btn btn-warning rounded-pill px-4 fw-bold">Панельге қайту</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Мақалалар бөлімі (Статикалық мысал) -->
+                <div class="mt-5">
+                    <h4 class="fw-bold mb-3">Менің жарияланымдарым</h4>
+                    <div class="list-group shadow-sm">
+                        <div class="list-group-item p-3 border-0 rounded-3 mb-2 shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Java Spring Boot негіздері</h6>
+                                    <small class="text-muted">Жарияланған күні: 04.05.2026</small>
+                                </div>
+                                <span class="badge bg-success">Белсенді</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

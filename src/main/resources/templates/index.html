@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>University Ecosystem</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        form { margin-bottom: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>Университет қолданушылары</h1>
+
+    <!-- Қолданушы қосу формасы -->
+    <form action="/add-user" method="post">
+        <input type="text" name="name" placeholder="Аты-жөні" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <button type="submit">Қосу</button>
+    </form>
+
+    <!-- Тізім -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Аты-жөні</th>
+            <th>Email</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+        </tr>
+    </table>
+</body>
+</html>

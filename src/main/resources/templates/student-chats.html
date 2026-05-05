@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Студент Чаты | UniEcosystem</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .chat-container { height: 85vh; background: white; border-radius: 20px; overflow: hidden; }
+        .sidebar { background: #fff; border-right: 1px solid #dee2e6; overflow-y: auto; }
+        .chat-bubble-me { background: #ffc107; color: black; border-radius: 15px 15px 0 15px; max-width: 70%; position: relative; }
+        .chat-bubble-other { background: #e9ecef; color: black; border-radius: 15px 15px 15px 0; max-width: 70%; position: relative; }
+        .active-user { background-color: #f0f2f5 !important; border-left: 4px solid #ffc107 !important; }
+        .user-item { cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f8f9fa; }
+        .user-item:hover { background-color: #f8f9fa; }
+        .last-msg-text { 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            max-width: 180px; 
+            display: block;
+            font-size: 0.85rem;
+        }
+        .search-box { background: #f0f2f5; border: none; border-radius: 10px; }
+    </style>
+</head>
+<body style="background-color: #f0f2f5;">
+    <div th:replace="~{header :: navbar}"></div>
+
+    <div class="container mt-3">
+        <div class="row chat-container shadow-sm">
+            
+            <!-- 1. Sidebar: Контактілер және Іздеу -->
+            <div class="col-md-4 col-lg-3 sidebar p-0 d-flex flex-column">
+                <div class="p-3 border-bottom">
+                    <h5 class="fw-bold mb-3">Чаттар</h5>
+                    <!-- Іздеу формасы -->
+                    <form th:action="@{/chats}" method="get" class="mb-2">
+                        <div class="input-group">
+                            <input type="text" name="search" th:value="${searchQuery}" 
+                                   class="form-control search-box" placeholder="Іздеу...">
+                            <button class="btn btn-light border" type="submit">🔍</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="list-group list-group-flush flex-grow-1" style="overflow-y: auto;">
+                    <!-- Егер тізім бос болса -->
+                    <div th:if="${#lists.isEmpty(lastMessages)}" class="p-4 text-center text-muted">
+                        <small th:text="${isSearch} ? 'Ешкім табылмады' : 'Әзірге чаттар жоқ'"></small>
+                    </div>
+
+                    <!-- Контактілер тізімі -->
+                    <a th:each="msg : ${lastMessages}" 
+                       th:with="contact=${msg.sender.id == currentUserId ? msg.receiver : msg.sender}"
+                       th:href="@{/chats(with=${contact.id})}"
+                       class="list-group-item list-group-item-action border-0 p-3 user-item"
+                       th:classappend="${chatWith != null && chatWith.id == contact.id} ? 'active-user' : ''">
+                        
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="w-100">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1 fw-bold" th:text="${contact.fullName}">Аты-жөні</h6>
+                                    <!-- Уақыты (тек соңғы хабарлама болса шығады) -->
+                                    <small class="text-muted" style="font-size: 0.7rem;" 
+                                           th:if="${msg.timestamp != null}"
+                                           th:text="${#temporals.format(msg.timestamp, 'HH:mm')}"></small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center text-muted">
+                                    <!-- "Мен:" префиксі, егер соңғы хатты мен жіберсем -->
+                                    <small th:if="${msg.sender.id == currentUserId && msg.content != ''}" class="me-1 small">Мен:</small>
+                                    <span class="last-msg-text" th:text="${msg.content != '' ? msg.content : contact.role}">Соңғы хабарлама...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Чат терезесі -->
+            <div class="col-md-8 col-lg-9 d-flex flex-column p-0 bg-white">
+                
+                <!-- Егер ешкім таңдалмаса -->
+                <div th:if="${chatWith == null}" class="flex-grow-1 d-flex align-items-center justify-content-center flex-column text-muted">
+                    <div class="text-center">
+                        <div class="display-1 opacity-25">💬</div>
+                        <h5>Сөйлесуді бастаңыз</h5>
+                        <p class="small">Контактіні таңдаңыз немесе іздеуді қолданыңыз</p>
+                    </div>
+                </div>
+
+                <!-- Егер чат таңдалса -->
+                <div th:if="${chatWith != null}" class="d-flex flex-column h-100">
+                    <div class="p-3 border-bottom d-flex align-items-center">
+                        <div class="ms-2">
+                            <div class="fw-bold" th:text="${chatWith.fullName}">Аты-жөні</div>
+                            <small class="text-success" style="font-size: 0.75rem;">• онлайн</small>
+                        </div>
+                    </div>
+
+                    <!-- Хабарламалар тарихы -->
+                    <div id="chatHistory" class="flex-grow-1 p-4" style="overflow-y: auto; background-color: #f9f9f9;">
+                        <div th:each="msg : ${messages}" 
+                             class="d-flex mb-3"
+                             th:classappend="${msg.sender.id == currentUserId} ? 'justify-content-end' : 'justify-content-start'">
+                            
+                            <div th:class="${msg.sender.id == currentUserId} ? 'chat-bubble-me p-3 shadow-sm' : 'chat-bubble-other p-3 shadow-sm'">
+                                <div th:text="${msg.content}">Хабарлама мәтіні</div>
+                                <div class="text-end" style="font-size: 0.65rem; opacity: 0.6; margin-top: 2px;" 
+                                     th:text="${#temporals.format(msg.timestamp, 'HH:mm')}">12:30</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Хабарлама жіберу формасы -->
+                    <div class="p-3 bg-white border-top">
+                        <form th:action="@{/sendMessage}" method="post" class="d-flex align-items-center">
+                            <input type="hidden" name="receiverId" th:value="${chatWith.id}">
+                            <input type="text" name="content" autocomplete="off" required
+                                   class="form-control rounded-pill border-0 bg-light me-2 px-4 py-2" 
+                                   placeholder="Хабарлама жазу...">
+                            <button type="submit" class="btn btn-warning rounded-circle d-flex align-items-center justify-content-center" 
+                                    style="width: 40px; height: 40px;">
+                                <span style="transform: rotate(-45deg); margin-bottom: 3px; margin-left: 3px;">➤</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Скроллды төмен түсіру
+        const chatHistory = document.getElementById('chatHistory');
+        if(chatHistory) chatHistory.scrollTop = chatHistory.scrollHeight;
+    </script>
+</body>
+</html>

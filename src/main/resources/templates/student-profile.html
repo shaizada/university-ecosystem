@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жеке кабинет | Студент</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; transition: 0.3s; }
+        
+        /* КЕЗ КЕЛГЕН РЕЖИМГЕ ИКЕМДІ БЛОКТАР */
+        .profile-header, .stat-card, .card-custom {
+            background-color: var(--bs-tertiary-bg) !important; /* Автоматты фон */
+            border: 1px solid var(--bs-border-color) !important;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .profile-cover {
+            height: 120px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+        }
+
+        .avatar-wrapper { margin-top: -60px; padding: 0 30px; }
+
+        .avatar-img {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 5px solid var(--bs-tertiary-bg);
+            background: #333;
+            object-fit: cover;
+        }
+        
+        .stat-card { padding: 20px; text-align: center; }
+        .stat-card:hover { transform: translateY(-5px); border-color: #ffc107 !important; }
+        
+        .section-title {
+            font-weight: 700;
+            color: #ffc107;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .arrow-btn {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107 !important;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            transition: 0.3s;
+        }
+        .arrow-btn:hover { background: #ffc107; color: #000 !important; }
+
+        /* Мәтіндердің түсі режимге қарай өзгеруі үшін */
+        .adaptive-text { color: var(--bs-body-color) !important; }
+    </style>
+</head>
+<body class="bg-body text-body"> <!-- bg-dark орнына bg-body қолданамыз -->
+    
+    <div th:replace="~{header :: navbar}"></div>
+
+    <div class="container py-4">
+        <div class="row">
+            <!-- Сол жақ: Студенттің ақпараты -->
+            <div class="col-lg-4 mb-4">
+                <div class="profile-header shadow-sm">
+                    <div class="profile-cover"></div>
+                    <div class="avatar-wrapper text-center">
+                        <img src="https://ui-avatars.com/api/?name=Student&background=ffc107&color=1a1a1a&size=128" class="avatar-img shadow" alt="Avatar">
+                        <h4 class="mt-3 fw-bold adaptive-text" th:text="${userName}">Студенттің Аты</h4>
+                        <p class="text-secondary small">Astana International University</p>
+                        <div class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3 fw-bold">ID: 210103045</div>
+                    </div>
+                    <div class="p-4 border-top border-secondary-subtle">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary small">Мамандық:</span>
+                            <span class="adaptive-text small fw-bold">Information Systems</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-secondary small">Курс:</span>
+                            <span class="adaptive-text fw-bold">2-курс</span>
+                        </div>
+                        <button class="btn btn-outline-warning w-100 mt-3 btn-sm fw-bold">Редакциялау</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Оң жақ: Активтілік -->
+            <div class="col-lg-8">
+                <div class="row mb-4 text-center">
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card shadow-sm">
+                            <h2 class="fw-bold" style="color: #ffc107;" th:text="${#lists.size(articles)}">0</h2>
+                            <p class="text-secondary small mb-0">Жаңа мақала</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card shadow-sm">
+                            <h2 class="fw-bold text-success">5</h2>
+                            <p class="text-secondary small mb-0">Сауалнама</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="stat-card shadow-sm">
+                            <h2 class="fw-bold text-info">3</h2>
+                            <p class="text-secondary small mb-0">Активті чат</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom shadow-sm p-4 mb-4 border-0">
+                    <h5 class="section-title">Маған арналған мақалалар</h5>
+                    <div class="list-group list-group-flush">
+                        <div th:each="article : ${articles}" class="list-group-item bg-transparent border-secondary-subtle py-3 px-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 fw-bold adaptive-text" th:text="${article.title}">Тақырыбы</h6>
+                                    <small class="text-secondary">
+                                        Күні: <span th:text="${#temporals.format(article.createdAt, 'dd.MM.yyyy')}"></span>
+                                    </small>
+                                </div>
+                                <a href="/home" class="btn arrow-btn btn-sm rounded-circle">→</a>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.isEmpty(articles)}" class="text-secondary small text-center py-4">
+                            Әзірге жаңа мақалалар жоқ.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сауалнама: Мұнда фонды стильді қалдырдым, себебі ол акцентті блок -->
+                <div class="card border-0 shadow-sm p-4 rounded-4" style="background: linear-gradient(45deg, #1a1a1a, #2c2c2c);">
+                    <h5 class="fw-bold mb-2 text-warning">Белсенді сауалнамалар</h5>
+                    <p class="small text-secondary">Университет өмірін жақсартуға өз даусыңды бер.</p>
+                    <div class="d-flex gap-2 mt-2">
+                        <button class="btn btn-warning btn-sm fw-bold px-4">ҚАТЫСУ</button>
+                        <button class="btn btn-outline-light btn-sm">КЕЙІН</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
