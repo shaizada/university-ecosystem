@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -180,7 +181,15 @@ public class HomeController {
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
         if (session.getAttribute("userId") == null) return "redirect:/login";
+
+        long articlesCount = articleRepository.count(); // Базадағы мақала санын алады
+        long chatsCount = messageRepository.count();   // Базадағы хабарлама санын алады
         
+        model.addAttribute("articlesCount", articlesCount);
+        model.addAttribute("pollsCount", 5); // Сауалнама санын әзірге қолмен жаза салсақ болады
+        model.addAttribute("chatsCount", chatsCount);
+        // ------------------------
+
         model.addAttribute("articles", articleRepository.findAllByOrderByCreatedAtDesc());
         model.addAttribute("userName", session.getAttribute("userName"));
         model.addAttribute("userRole", session.getAttribute("userRole"));
@@ -205,4 +214,34 @@ public class HomeController {
         session.invalidate(); 
         return "redirect:/login";
     }
+    @PostMapping("/profile/upload-photo")
+    public String uploadPhoto(@RequestParam("photo") MultipartFile file, HttpSession session) {
+    Long userId = (Long) session.getAttribute("userId");
+    if (userId == null || file.isEmpty()) return "redirect:/profile";
+
+    try {
+        // 1. Папка құру (static ішіндегі uploads)
+        String uploadDir = "src/main/resources/static/uploads/";
+        java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+        if (!java.nio.file.Files.exists(uploadPath)) {
+            java.nio.file.Files.createDirectories(uploadPath);
+        }
+
+        // 2. Файл атын бірегей қылу
+        String fileName = java.util.UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        java.nio.file.Path filePath = uploadPath.resolve(fileName);
+        java.nio.file.Files.write(filePath, file.getBytes());
+
+        // 3. Базадағы қолданушының суретін жаңарту
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setPhoto(fileName);
+            userRepository.save(user);
+            session.setAttribute("userPhoto", fileName); // Сессияны жаңарту
+        }
+    } catch (java.io.IOException e) {
+        e.printStackTrace();
+    }
+    return "redirect:/profile";
+}
 }

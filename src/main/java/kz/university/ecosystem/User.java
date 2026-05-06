@@ -26,4 +26,9 @@ public class User {
 
     private String password;
     private String role; // "STUDENT" немесе "TEACHER"
+    private String photo; // Суреттің атын сақтау үшін
+
+// Getter және Setter
+public String getPhoto() { return photo; }
+public void setPhoto(String photo) { this.photo = photo; }
 }

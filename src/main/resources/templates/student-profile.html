@@ -27,10 +27,13 @@
         .avatar-img {
             width: 120px; height: 120px;
             border-radius: 50%;
-            border: 5px solid var(--bs-tertiary-bg);
-            background: #333;
+            border: 5px solid #1e1e1e; /* Шетін қоюлаттық */
+            background: #222;
             object-fit: cover;
         }
+        /* Мынаны қосып жібер (жазулар ап-ақ болып тұруы үшін) */
+        .text-main { color: #ffffff !important; font-weight: 600; }
+        .text-muted-custom { color: #b0b0b0 !important; }
         
         .stat-card { padding: 20px; text-align: center; }
         .stat-card:hover { transform: translateY(-5px); border-color: #ffc107 !important; }
@@ -61,51 +64,79 @@
     <div class="container py-4">
         <div class="row">
             <!-- Сол жақ: Студенттің ақпараты -->
-            <div class="col-lg-4 mb-4">
-                <div class="profile-header shadow-sm">
-                    <div class="profile-cover"></div>
-                    <div class="avatar-wrapper text-center">
-                        <img src="https://ui-avatars.com/api/?name=Student&background=ffc107&color=1a1a1a&size=128" class="avatar-img shadow" alt="Avatar">
-                        <h4 class="mt-3 fw-bold adaptive-text" th:text="${userName}">Студенттің Аты</h4>
-                        <p class="text-secondary small">Astana International University</p>
-                        <div class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-3 fw-bold">ID: 210103045</div>
-                    </div>
-                    <div class="p-4 border-top border-secondary-subtle">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-secondary small">Мамандық:</span>
-                            <span class="adaptive-text small fw-bold">Information Systems</span>
-                        </div>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-secondary small">Курс:</span>
-                            <span class="adaptive-text fw-bold">2-курс</span>
-                        </div>
-                        <button class="btn btn-outline-warning w-100 mt-3 btn-sm fw-bold">Редакциялау</button>
-                    </div>
-                </div>
+<div class="col-lg-4 mb-4">
+    <div class="profile-header shadow-sm" style="background-color: white; border-radius: 15px; overflow: hidden;">
+        <div class="profile-cover" style="height: 100px; background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);"></div>
+        <div class="avatar-wrapper text-center" style="margin-top: -50px;">
+            <div class="position-relative d-inline-block">
+                <!-- Аватар -->
+                <img th:src="${session.userPhoto != null ? '/uploads/' + session.userPhoto : 'https://ui-avatars.com/api/?name=' + (userName ?: 'Student') + '&background=ffc107&color=1a1a1a&size=128'}" 
+                     class="avatar-img shadow" 
+                     style="width: 110px; height: 110px; border-radius: 50%; border: 5px solid white; object-fit: cover; background: #eee;">
+                
+                <!-- Фото жүктеу батырмасы -->
+                <label for="fileInput" class="position-absolute bottom-0 end-0 bg-warning rounded-circle p-2" style="cursor: pointer; border: 2px solid white; line-height: 1; display: flex;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="black" viewBox="0 0 16 16">
+                        <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                        <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
+                    </svg>
+                </label>
+                <form id="photoForm" th:action="@{/profile/upload-photo}" method="post" enctype="multipart/form-data" style="display: none;">
+                    <input type="file" id="fileInput" name="photo" accept="image/*" onchange="document.getElementById('photoForm').submit()">
+                </form>
             </div>
+            
+            <!-- Мәтіндер енді қара түсті (text-dark) -->
+            <h4 class="mt-3 fw-bold text-dark" th:text="${userName ?: 'Шайзада Бақтияр'}">Аты</h4>
+            <p class="text-muted small mb-2">Astana International University</p>
+            <div class="badge bg-warning text-dark px-3 py-1 rounded-pill mb-3 fw-bold">
+                ID: <span th:text="${session.userId ?: '1'}"></span>
+            </div>
+        </div>
 
+        <div class="p-4 border-top border-light">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Мамандық:</span>
+                <span class="text-dark small fw-bold">Information Systems</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">Курс:</span>
+                <span class="text-dark small fw-bold">2-курс</span>
+            </div>
+            
+            <!-- РЕДАКЦИЯЛАУ БАТЫРМАСЫ -->
+            <!-- Бұл сілтеме сенің контроллеріңдегі @GetMapping("/settings")-ке жібереді -->
+            <a th:href="@{/settings}" class="btn btn-outline-warning w-100 mt-3 btn-sm fw-bold">
+                Редакциялау
+            </a>
+        </div>
+    </div>
+</div>
             <!-- Оң жақ: Активтілік -->
             <div class="col-lg-8">
                 <div class="row mb-4 text-center">
-                    <div class="col-md-4 mb-3">
-                        <div class="stat-card shadow-sm">
-                            <h2 class="fw-bold" style="color: #ffc107;" th:text="${#lists.size(articles)}">0</h2>
-                            <p class="text-secondary small mb-0">Жаңа мақала</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="stat-card shadow-sm">
-                            <h2 class="fw-bold text-success">5</h2>
-                            <p class="text-secondary small mb-0">Сауалнама</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="stat-card shadow-sm">
-                            <h2 class="fw-bold text-info">3</h2>
-                            <p class="text-secondary small mb-0">Активті чат</p>
-                        </div>
-                    </div>
-                </div>
+    <!-- Мақалалар -->
+    <div class="col-md-4">
+        <div class="stat-card shadow-sm p-3 bg-white" style="border-radius: 15px;">
+            <h3 class="text-warning fw-bold" th:text="${articlesCount ?: 0}">0</h3>
+            <p class="text-muted small">Жаңа мақала</p>
+        </div>
+    </div>
+    <!-- Сауалнамалар -->
+    <div class="col-md-4">
+        <div class="stat-card shadow-sm p-3 bg-white" style="border-radius: 15px;">
+            <h3 class="text-warning fw-bold" th:text="${pollsCount ?: 5}">5</h3>
+            <p class="text-muted small">Сауалнама</p>
+        </div>
+    </div>
+    <!-- Чаттар -->
+    <div class="col-md-4">
+        <div class="stat-card shadow-sm p-3 bg-white" style="border-radius: 15px;">
+            <h3 class="text-warning fw-bold" th:text="${chatsCount ?: 0}">0</h3>
+            <p class="text-muted small">Активті чат</p>
+        </div>
+    </div>
+</div>
 
                 <div class="card card-custom shadow-sm p-4 mb-4 border-0">
                     <h5 class="section-title">Маған арналған мақалалар</h5>
